@@ -72,9 +72,7 @@ def update_q_value(
     hp: Hyperparameters,
 ) -> float:
     return q[state, action] + hp.learning_rate * (
-        reward
-        + hp.discount_factor * np.max(q[next_state, next_action])
-        - q[state, action]
+        reward + hp.discount_factor * q[next_state, next_action] - q[state, action]
     )
 
 
@@ -191,5 +189,15 @@ if __name__ == "__main__":
         render=False,
         verbose=True,
     )
+    """
     # For evaluation
-    # q, rewards = run(1, hp, save_table="qLearning.pkl", save_plot="qLearning.png", is_training=False, render=True, verbose=False)
+    q, rewards = run(
+        1,
+        hp,
+        save_table="SARSA.pkl",
+        save_plot="SARSA.png",
+        is_training=False,
+        render=True,
+        verbose=False,
+    )
+    """
