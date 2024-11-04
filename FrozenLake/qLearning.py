@@ -12,9 +12,14 @@ import numpy as np
 class Hyperparameters:
     learning_rate: float = 0.9
     discount_factor: float = 0.9
-    epsilon: float = 1.0
+    initial_epsilon: float = 1.0
+    epsilon: float = None
     decay_rate: float = 0.00001
     decay_type: str = "linear"
+
+    def __post_init__(self):
+        if self.epsilon is None:
+            self.epsilon = self.initial_epsilon
 
 
 def setup_environment(render: bool = False) -> gym.Env:
@@ -97,7 +102,7 @@ def run_episode(
 
 def decay_epsilon(hp: Hyperparameters, episode: int) -> float:
     if hp.decay_type == "exponential":
-        return hp.epsilon * np.exp(-hp.decay_rate * episode)
+        return max(hp.initial_epsilon * np.exp(-hp.decay_rate * episode), 0.1)
     elif hp.decay_type == "linear":
         return max(hp.epsilon - hp.decay_rate, 0)
     else:
@@ -165,9 +170,9 @@ if __name__ == "__main__":
     hp = Hyperparameters(
         learning_rate=0.9,
         discount_factor=0.9,
-        epsilon=1.0,
-        decay_rate=0.00001,
-        decay_type="linear",
+        initial_epsilon=1.0,
+        decay_rate=0.00003,
+        decay_type="exponential",
     )
 
     q, rewards = run(
