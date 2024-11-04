@@ -67,11 +67,11 @@ def update_q_value(
     state: int,
     action: int,
     reward: float,
-    new_state: int,
+    next_state: int,
     hp: Hyperparameters,
 ) -> float:
     return q[state, action] + hp.learning_rate * (
-        reward + hp.discount_factor * np.max(q[new_state, :]) - q[state, action]
+        reward + hp.discount_factor * np.max(q[next_state, :]) - q[state, action]
     )
 
 
@@ -88,13 +88,13 @@ def run_episode(
 
     while not terminated and not truncated:
         action = choose_action(q, state, env, hp.epsilon, rng, is_training)
-        new_state, reward, terminated, truncated, _ = env.step(action)
+        next_state, reward, terminated, truncated, _ = env.step(action)
         reward = float(reward)
 
         if is_training:
-            q[state, action] = update_q_value(q, state, action, reward, new_state, hp)
+            q[state, action] = update_q_value(q, state, action, reward, next_state, hp)
 
-        state = new_state
+        state = next_state
         episode_reward += reward
 
     return episode_reward
